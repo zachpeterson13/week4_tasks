@@ -13,7 +13,8 @@
 -define(SERVER, ?MODULE).
 
 %% API
--export([start/0, stop/0, add/1, list/0, remove/1, remove_all/0]).
+-export([start/0, start/1, stop/0, stop/1, add/1, add/2, list/0, list/1, remove/1,
+         remove/2, remove_all/0, remove_all/1]).
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
@@ -32,7 +33,10 @@
 %%--------------------------------------------------------------------
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
-  gen_server:start({local, ?SERVER}, ?MODULE, [], []).
+  gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+
+start(Registered_name) ->
+  gen_server:start_link({local, Registered_name}, ?MODULE, [], []).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -44,6 +48,9 @@ start() ->
 stop() ->
   gen_server:call(?SERVER, stop).
 
+stop(Registered_name) ->
+  gen_server:call(Registered_name, stop).
+
 %%--------------------------------------------------------------------
 %% @doc
 %%
@@ -51,6 +58,9 @@ stop() ->
 %%--------------------------------------------------------------------
 add(Item) ->
   gen_server:call(?SERVER, {add, Item}).
+
+add(Registered_name, Item) ->
+  gen_server:call(Registered_name, {add, Item}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -60,6 +70,9 @@ add(Item) ->
 list() ->
   gen_server:call(?SERVER, list).
 
+list(Registered_name) ->
+  gen_server:call(Registered_name, list).
+
 %%--------------------------------------------------------------------
 %% @doc
 %%
@@ -68,6 +81,9 @@ list() ->
 remove(Item) ->
   gen_server:call(?SERVER, {remove, Item}).
 
+remove(Registered_name, Item) ->
+  gen_server:call(Registered_name, {remove, Item}).
+
 %%--------------------------------------------------------------------
 %% @doc
 %%
@@ -75,6 +91,9 @@ remove(Item) ->
 %%--------------------------------------------------------------------
 remove_all() ->
   gen_server:call(?SERVER, remove_all).
+
+remove_all(Registered_name) ->
+  gen_server:call(Registered_name, remove_all).
 
 %%%===================================================================
 %%% gen_server callbacks

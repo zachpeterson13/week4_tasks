@@ -13,7 +13,8 @@
 -define(SERVER, ?MODULE).
 
 %% API
--export([start/0, stop/0, add/2, subtract/2, divide/2, multiply/2]).
+-export([start/0, start/1, stop/0, stop/1, add/2, add/3, subtract/2, subtract/3, divide/2,
+         divide/3, multiply/2, multiply/3]).
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
@@ -32,7 +33,10 @@
 %%--------------------------------------------------------------------
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
-  gen_server:start({local, ?SERVER}, ?MODULE, [], []).
+  gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+
+start(Registered_name) ->
+  gen_server:start_link({local, Registered_name}, ?MODULE, [], []).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -44,17 +48,32 @@ start() ->
 stop() ->
   gen_server:call(?MODULE, stop).
 
+stop(Registered_name) ->
+  gen_server:call(Registered_name, stop).
+
 add(N1, N2) ->
   gen_server:call(?MODULE, {add, N1, N2}).
+
+add(Registered_name, N1, N2) ->
+  gen_server:call(Registered_name, {add, N1, N2}).
 
 subtract(N1, N2) ->
   gen_server:call(?MODULE, {subtract, N1, N2}).
 
+subtract(Registered_name, N1, N2) ->
+  gen_server:call(Registered_name, {subtract, N1, N2}).
+
 divide(N1, N2) ->
   gen_server:call(?MODULE, {divide, N1, N2}).
 
+divide(Registered_name, N1, N2) ->
+  gen_server:call(Registered_name, {divide, N1, N2}).
+
 multiply(N1, N2) ->
   gen_server:call(?MODULE, {multiply, N1, N2}).
+
+multiply(Registered_name, N1, N2) ->
+  gen_server:call(Registered_name, {multiply, N1, N2}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -94,8 +113,8 @@ handle_call({add, N1, N2}, _From, State) ->
   {reply, N1 + N2, State};
 handle_call({subtract, N1, N2}, _From, State) ->
   {reply, N1 - N2, State};
-handle_call({divide, _N1, 0}, _From, State) ->
-  {reply, divide_by_zero_error, State};
+% handle_call({divide, _N1, 0}, _From, State) ->
+%   {reply, divide_by_zero_error, State};
 handle_call({divide, N1, N2}, _From, State) ->
   {reply, N1 / N2, State};
 handle_call({multiply, N1, N2}, _From, State) ->
