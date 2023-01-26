@@ -29,7 +29,9 @@ init([]) ->
     #{strategy => one_for_all,
       intensity => 0,
       period => 1},
-  ChildSpecs = [generate_spec(static1, static_sup, supervisor)],
+  ChildSpecs =
+    [generate_spec(static1, static_sup, supervisor),
+     generate_spec(dynamic1, dynamic_sup, supervisor)],
   {ok, {SupFlags, ChildSpecs}}.
 
 %% internal functions
